@@ -6,8 +6,8 @@
 
 # I got this handy makefile syntax from : https://github.com/mandel59/sqlite-wasm (MIT License) Credited in LICENSE
 # To use another version of Sqlite, visit https://www.sqlite.org/download.html and copy the appropriate values here:
-SQLITE_AMALGAMATION = sqlite-amalgamation-3360000
-SQLITE_AMALGAMATION_ZIP_URL = https://www.sqlite.org/2021/sqlite-amalgamation-3360000.zip
+SQLITE_AMALGAMATION = sqleet-v0.31.1-amalgamation
+SQLITE_AMALGAMATION_ZIP_URL = https://github.com/resilar/sqleet/releases/download/v0.31.1/sqleet-v0.31.1-amalgamation.zip
 SQLITE_AMALGAMATION_ZIP_SHA3 = d25609210ec93b3c8c7da66a03cf82e2c9868cfbd2d7d866982861855e96f972
 
 # Note that extension-functions.c hasn't been updated since 2010-02-06, so likely doesn't need to be updated
@@ -175,12 +175,15 @@ sqlite-src: sqlite-src/$(SQLITE_AMALGAMATION) sqlite-src/$(SQLITE_AMALGAMATION)/
 
 sqlite-src/$(SQLITE_AMALGAMATION): cache/$(SQLITE_AMALGAMATION).zip sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS)
 	mkdir -p sqlite-src/$(SQLITE_AMALGAMATION)
-	echo '$(SQLITE_AMALGAMATION_ZIP_SHA3)  ./cache/$(SQLITE_AMALGAMATION).zip' > cache/check.txt
-	sha3sum -c cache/check.txt
+	# echo '$(SQLITE_AMALGAMATION_ZIP_SHA3)  ./cache/$(SQLITE_AMALGAMATION).zip' > cache/check.txt
+	# sha3sum -c cache/check.txt
 	# We don't delete the sqlite_amalgamation folder. That's a job for clean
 	# Also, the extension functions get copied here, and if we get the order of these steps wrong,
 	# this step could remove the extension functions, and that's not what we want
 	unzip -u 'cache/$(SQLITE_AMALGAMATION).zip' -d sqlite-src/
+	mv sqlite-src/sqleet-v0.31.1/sqleet.c sqlite-src/$(SQLITE_AMALGAMATION)/sqlite3.c
+	mv sqlite-src/sqleet-v0.31.1/sqleet.h sqlite-src/$(SQLITE_AMALGAMATION)/sqlite3.h
+	mv sqlite-src/sqleet-v0.31.1/sqlite3ext.h sqlite-src/$(SQLITE_AMALGAMATION)/sqlite3ext.h
 	touch $@
 
 sqlite-src/$(SQLITE_AMALGAMATION)/$(EXTENSION_FUNCTIONS): cache/$(EXTENSION_FUNCTIONS)
